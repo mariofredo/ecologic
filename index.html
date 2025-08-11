@@ -4,16 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ecologic</title>
+    <link rel="stylesheet" href="./style/global.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
     <script
       src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
       integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-    <link rel="stylesheet" href="./style/global.css" />
   </head>
   <body>
     <div class="main_ctr">
+      <nav class="nav_ctr">
+        <div class="nav_box">
+          <img src="./images/nav_logo.svg" class="nav_logo" alt="nav_logo" />
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Contact</a></li>
+            <li>
+              <img
+                src="./images/nav_menu.svg"
+                class="nav_menu"
+                alt="nav_menu"
+              />
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="backdrop"></div>
       <div class="floating_card"></div>
       <div class="card_ctr">
         <div class="card">
@@ -49,6 +74,7 @@
 
         $('.card').click(function () {
           const $card = $(this).find('.content');
+          const $index = $(this).index();
           const $parent = $card.parent();
           console.log('parent:', $parent);
           const domCard = $card[0]; // or $card.get(0)
@@ -64,6 +90,7 @@
               width: getBoundingRect.width + 'px',
               height: getBoundingRect.height + 'px',
               backgroundColor: bgColor,
+              zIndex: 6,
             },
             {
               position: 'absolute',
@@ -128,21 +155,24 @@
               }, 200);
             },
           });
-          cards.each(function (index) {
+          console.log('cards:', cards.slice($index));
+          cards.slice($index).each(function (index) {
             const $this = $(this);
             cardsTimeline.to(
               $this,
               {
                 xPercent: -100,
-                onComplete: function () {
-                  gsap.set($this, {
-                    xPercent: 0,
-                    duration: 1,
-                  });
-                },
+                delay: 0.2,
               },
               index * 0.1 // stagger effect
             );
+            gsap.set($this, {
+              xPercent: 0,
+              delay: 0.2,
+              onComplete: function () {
+                console.log('Timestamp:', new Date().toISOString());
+              },
+            });
           });
         });
       });
