@@ -40,33 +40,87 @@
       </nav>
       <div class="backdrop"></div>
       <div class="floating_card"></div>
-      <div class="card_ctr">
+      <!-- <div class="card_ctr">
         <div class="card">
-          <div class="content" style="background-color: red"></div>
+          <div
+            class="content"
+            style="background: url('./images/bg_image_first.png')"
+          ></div>
         </div>
         <div class="card">
-          <div class="content" style="background-color: blue"></div>
+          <div class="content" style="background: blue"></div>
         </div>
         <div class="card">
-          <div class="content" style="background-color: green"></div>
+          <div class="content" style="background: green"></div>
         </div>
         <div class="card">
-          <div class="content" style="background-color: greenyellow"></div>
+          <div class="content" style="background: greenyellow"></div>
         </div>
         <div class="card">
-          <div class="content" style="background-color: bisque"></div>
+          <div class="content" style="background: bisque"></div>
         </div>
         <div class="card">
-          <div class="content" style="background-color: blueviolet"></div>
+          <div class="content" style="background: blueviolet"></div>
         </div>
-      </div>
+      </div> -->
     </div>
     <script>
       $(document).ready(function () {
         // Initialize the main functionality of the application
+        const $mainCtr = $('.main_ctr');
         function init() {
-          console.log('Application initialized');
-          // Additional initialization code can go here
+          const arr = [
+            {
+              title: 'Card 1',
+              content: 'Content for card 1',
+              background: 'url(./images/circular_thinking.png)',
+            },
+            {
+              title: 'Card 2',
+              content: 'Content for card 1',
+              background: 'url(./images/producing_pmu.png)',
+            },
+            {
+              title: 'Card 3',
+              content: 'Content for card 1',
+              background: 'url(./images/bg_image_first.png)',
+            },
+            {
+              title: 'Card 4',
+              content: 'Content for card 1',
+              background: 'url(./images/bg_image_first.png)',
+            },
+            {
+              title: 'Card 5',
+              content: 'Content for card 1',
+              background: 'url(./images/bg_image_first.png)',
+            },
+            {
+              title: 'Card 6',
+              content: 'Content for card 1',
+              background: 'url(./images/bg_image_first.png)',
+            },
+            {
+              title: 'Card 7',
+              content: 'Content for card 1',
+              background: 'url(./images/bg_image_first.png)',
+            },
+          ];
+          arr.forEach((item, idx) => {
+            const $card = $(`
+              <div class="card" style="position: absolute; top: 50%; left: calc(50% + ${
+                idx * 320
+              }px); transform: translateY(-50%); background: ${
+              item.background
+            } no-repeat center center; background-size: cover;">
+                <div class="content">
+                  <h2>${item.title}</h2>
+                  <p>${item.content}</p>
+                </div>
+              </div>
+            `);
+            $mainCtr.append($card);
+          });
         }
 
         // Call the init function when the document is ready
@@ -74,13 +128,13 @@
 
         $('.card').click(function () {
           const $card = $(this).find('.content');
-          const $index = $(this).index();
           const $parent = $card.parent();
           console.log('parent:', $parent);
           const domCard = $card[0]; // or $card.get(0)
           const getBoundingRect = domCard.getBoundingClientRect();
           console.log(getBoundingRect);
-          const bgColor = $card.css('background-color');
+          const $copyCard = $parent.clone();
+          const bg = $parent.css('background');
           gsap.fromTo(
             '.floating_card',
             {
@@ -89,12 +143,12 @@
               top: getBoundingRect.top + 'px',
               width: getBoundingRect.width + 'px',
               height: getBoundingRect.height + 'px',
-              backgroundColor: bgColor,
+              background: bg,
               zIndex: 6,
             },
             {
               position: 'absolute',
-              backgroundColor: bgColor,
+              backgroundColor: bg,
               left: '0px',
               top: '0px',
               right: 'auto',
@@ -103,6 +157,12 @@
               height: '100vh',
               ease: 'power2.inOut',
               duration: 2,
+              zIndex: 6,
+              onStart: function () {
+                // gsap.set($parent, {
+                //   opacity: '0',
+                // });
+              },
               onComplete: function () {
                 // gsap.to($parent, {
                 //   width: '0px',
@@ -117,61 +177,42 @@
               },
             }
           );
-          // gsap.fromTo(
-          //   $card,
-          //   {
-          //     minWidth: '300px',
-          //     opacity: 1,
-          //     ease: 'power2.inOut',
-          //   },
-          //   {
-          //     width: '0px',
-          //     minWidth: '0px',
-          //     opacity: 0,
-          //     duration: 1,
-          //     padding: 0,
-          //     ease: 'power2.inOut',
-          //     onComplete: function () {
-          //       setTimeout(() => {
-          //         $card.remove();
-          //       }, 200);
-          //     },
-          //   }
-          // );
-          const cards = $('.card');
-          const $cardCtr = $('.card_ctr');
-
-          const cardsTimeline = gsap.timeline();
-          gsap.to($parent, {
-            minWidth: '0px',
-            height: '0px',
-            opacity: 0,
-            duration: 0.7,
-            ease: 'power2.inOut',
-            onComplete: function () {
-              setTimeout(() => {
-                $parent.remove();
-                $cardCtr.append($parent);
-              }, 200);
+          gsap.fromTo(
+            $parent,
+            {
+              minWidth: '300px',
+              opacity: 1,
+              ease: 'power2.inOut',
+              zIndex: 5,
             },
-          });
-          console.log('cards:', cards.slice($index));
-          cards.slice($index).each(function (index) {
-            const $this = $(this);
-            cardsTimeline.to(
-              $this,
-              {
-                xPercent: -100,
-                delay: 0.2,
-              },
-              index * 0.1 // stagger effect
-            );
-            gsap.set($this, {
-              xPercent: 0,
-              delay: 0.2,
+            {
+              width: '0px',
+              minWidth: '0px',
+              opacity: 0,
+              duration: 1,
+              padding: 0,
+              ease: 'power2.inOut',
+              zIndex: 5,
               onComplete: function () {
-                console.log('Timestamp:', new Date().toISOString());
+                setTimeout(() => {
+                  $parent.remove();
+                }, 200);
               },
+            }
+          );
+          const $index = $('.card').index(this);
+          console.log($index, 'index of card clicked');
+          const $listCard = $('.card');
+          console.log($listCard, $listCard.slice($index), 'list card');
+          $listCard.slice($index).each(function (index) {
+            const $this = $(this);
+            gsap.to($this, {
+              xPercent: -100,
+              x: -20,
+              delay: 0.2,
+              duration: 0.5,
+              ease: 'power2.inOut',
+              stagger: 0.5,
             });
           });
         });
